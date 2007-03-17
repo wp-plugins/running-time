@@ -1,6 +1,7 @@
 === Running Time ===
+
 Contributors: hami
-Tags: date, time, age, running-time, length
+Tags: date, time, age, running-time, length, age-of-blog
 Requires at least: 2.1
 Tested up to: 2.1.2
 Stable tag: running-time-1.0.1
@@ -9,9 +10,13 @@ A Wordpress plugin that outputs your blog's age in date range, days, weeks, mont
 
 == Description ==
 
+**User Manual for Running Time 1.0**
+
 *Running Time* is Wordpress plugin that can output details about the age of your blog using the date from your first post. 
 *Running Time* can output the date of the first post, the date of the last post, the date range of your posts and the age 
 of the blog measured in either days, weeks, months or years
+
+*Running Time 1.0 has been tested in Wordpress 2.1, but it should work in Wordpress 2.0 with no problems, though untested.*
 
 == Installation ==
 
@@ -56,7 +61,7 @@ Below is explains the settings for the functions, defaults are in **bold**
 *	`joiningword` - The word between the two dates	
 	Settings: **'to'**, or anything you like
 
-	== How Old? ==
+== How Old? ==
 
 To output the age of your blog, based from the age of the first post in your blog you can add the following code to your template:
 
@@ -79,7 +84,9 @@ Below is explains the settings for the functions, defaults are in **bold**
 *	`suffix`	- The text that comes after	
 	Settings: **'format old'**, or anything you like
 
-	== Know Issues ==
+== Known Issues ==
 
-There is currently no distinction between singular days, weeks, months or years that the blog has been running for, so you will see '1 days' or 
-'1 years'. This will be addressed in the next version.
+There is currently no distinction between singular days, weeks, months or years that the blog has been running for, so you will see '1 days' or '1 years'. This will be addressed in the next version.
+
+If you find any bugs or want to request some additional features for future releases, please log them in this plugin's Google Code repository (both repositories are in sync with each other)
+<http://code.google.com/p/wordpress-running-time/>
