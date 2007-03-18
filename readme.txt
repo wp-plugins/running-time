@@ -10,8 +10,6 @@ A Wordpress plugin that outputs your blog's age in date range, days, weeks, mont
 
 == Description ==
 
-**User Manual for Running Time 1.1b1**
-
 *Running Time* is Wordpress plugin that can output details about the age of your blog using the date from your first post. 
 *Running Time* can output the date of the first post, the date of the last post, the date range of your posts and the age 
 of the blog measured in either days, weeks, months or years
