@@ -4,7 +4,7 @@ Contributors: hami
 Tags: date, time, age, running-time, length, age-of-blog
 Requires at least: 2.1
 Tested up to: 2.1.2
-Stable tag: running-time-1.1
+Stable tag: running-time-1.1b2
 
 A Wordpress plugin that outputs your blog's age in date range, days, weeks, months or years
 
@@ -14,7 +14,7 @@ A Wordpress plugin that outputs your blog's age in date range, days, weeks, mont
 *Running Time* can output the date of the first post, the date of the last post, the date range of your posts and the age 
 of the blog measured in either days, weeks, months or years
 
-*Running Time 1.1b1 has been tested in Wordpress 2.1, but it should work in Wordpress 2.0 with no problems, though untested.*
+*Running Time 1.1b2 has been tested in Wordpress 2.1, but it should work in Wordpress 2.0 with no problems, though untested.*
 
 == Installation ==
 

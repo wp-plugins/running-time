@@ -3,7 +3,7 @@
 Plugin Name: Running Time
 Plugin URI:  http://labs.saruken.com/
 Description: Outputs the date of the oldest post and/or the newest post. Also will output how long the your site has been running for based on the first post date.
-Version: 1.1 b1
+Version: 1.1 b2
 Author: Andrew Hamilton 
 Author URI: http://saruken.com
 Licensed under the The GNU General Public License 2.0 (GPL) http://www.gnu.org/licenses/gpl.html
@@ -19,9 +19,9 @@ function runningtime_daterange(
  global $wpdb;
 
  //Find the newest and oldest posts		
- 		if ($postype == 'post' || $postype == 'page'){ //Posts or Pages Only
- 			$newestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' AND post_type = $postype ORDER BY post_date DESC LIMIT 1");
- 			$oldestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' AND post_type = $postype ORDER BY post_date LIMIT 1");
+ 		if ($posttype == 'post' || $posttype == 'page'){ //Posts or Pages Only
+ 			$newestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' AND post_type = '$posttype' ORDER BY post_date DESC LIMIT 1");
+ 			$oldestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' AND post_type = '$posttype' ORDER BY post_date LIMIT 1");
  		}else{ //Both Posts and Pages
  			$newestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
  			$oldestpost = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ORDER BY post_date LIMIT 1");
