@@ -1,7 +1,7 @@
 === Running Time ===
 
 Contributors: hami
-Tags: date, time, age, running-time, length, age-of-blog
+Tags: date, time, age, running-time, length, age-of-blog, stats
 Requires at least: 2.1
 Tested up to: 2.1.2
 Stable tag: running-time-1.1b2
