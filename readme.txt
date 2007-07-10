@@ -65,23 +65,23 @@ Below is explains the options for the function, defaults are in **bold**
 	
 *	`postype` - Calculate date range from posts, pages or both
 	Options: **Posts Only**, Pages Only, Posts and Pages	
-	Arguments: **'post'**, 'page', 'both'
+	Settings: **'post'**, 'page', 'both'
 
 *	`dateoutput` - Dates to output either newest, oldest or both
 	Options: **Oldest and Newest**, Oldest Post Only, Newest Post Only
-	Arguments: **'both'**, 'oldest', 'newest'
+	Settings: **'both'**, 'oldest', 'newest'
 
 *	`dateformat` - Format for the output of the date using PHP date syntax
 	Options: **F j, Y**, or PHP date strings <http://www.php.net/date>
 	Settings: **'F j, Y'**, or PHP date strings
 
 *	`usedatejoiningword` - Use joining word between the dates
-	Options: **to**, or anything you want
-	Settings: **'to'**, or anything you want
-
-*	`datejoiningword` - Use joining word between the dates
 	Options: **Checked**, Unchecked
 	Settings: **'true'**, 'false'
+
+*	`datejoiningword` - The wording or symbol between the dates
+	Options: **to**, or anything you want
+	Settings: **'to'**, or anything you want
 
 *	`usedateprefix` - Use prefix before the date range
 	Options: **Checked**, Unchecked
@@ -144,11 +144,11 @@ Below is explains the settings for the functions, defaults are in **bold**
 	Settings: **'ago'**, or anything you like
 
 *	`prefixsuffix `	- Choose whether to use the prefix, suffix, both or none
-	Options: **Prefix and Suffix**, Prefix Only, Suffix Only, Use Neitherr
+	Options: **Prefix and Suffix**, Prefix Only, Suffix Only, Use Neither
 	Settings: **'both'**,  'prefix', 'suffix', 'none'
 
-*	`posttype_howold `	- Choose whether to use the prefix, suffix, both or none
-	Options: **Prefix and Suffix**, Prefix Only, Suffix Only, Use Neitherr
+*	`posttype_howold `	- Choose whether to measure age of posts, pages, both or a specified date
+	Options: **Post**, Page, Both, Specified Date
 	Settings: **'post'**,  'page', 'both', 'date'
 
 *	`cat_ID_howold` - Default category to calculate age from
@@ -158,6 +158,8 @@ Below is explains the settings for the functions, defaults are in **bold**
 *	`specified_date_howold` - Date to measure age of blog from
 	Options: **1st January 2007**, or any date of your choice
 	Settings: **'1st January 2007'**, or any date of your choice
+
+You can also call the function by placing `<!--runningtime_howold-->` in the content of your page or post. This will output the default output of the how old function, currently there is no way to override the default options when placing the function in your page or post.
 
 == Example Uses ==
 
