@@ -1,10 +1,10 @@
 === Running Time ===
 
 Contributors: hami
-Tags: date, time, age, running-time, length, age-of-blog, stats, statistics
+Tags: date, time, age, running-time, length, age-of-blog, stats, statistics,
 Requires at least: 2.1
-Tested up to: 2.1.2
-Stable tag: running-time-1.1b2
+Tested up to: 2.2.1
+Stable tag: running-time-1.1
 
 A Wordpress plugin that outputs your blog's age in date range, days, weeks, months or years
 
@@ -14,7 +14,7 @@ A Wordpress plugin that outputs your blog's age in date range, days, weeks, mont
 *Running Time* can output the date of the first post, the date of the last post, the date range of your posts and the age 
 of the blog measured in either days, weeks, months or years
 
-*Running Time 1.1b2 has been tested in Wordpress 2.1, but it should work in Wordpress 2.0 with no problems, though untested.*
+*Running Time 1.1 has been tested in Wordpress 2.2, but it should work in Wordpress 2.0 with no problems, though untested.*
 
 == Installation ==
 
@@ -29,71 +29,176 @@ There are two functions in *Running Time*, `runningtime_daterange()` and `runnin
 
 == Changes ==
 
-The biggest change in 1.1 is that it now supports PHP dates strings <http://au2.php.net/date> giving much more control of the output. This does mean that older calls to date range in your templates will needs to be updated to work properly. (Issue8)
-<http://code.google.com/p/wordpress-running-time/issues/detail?id=8&can=1&q=>
+The main change in 1.1, from previous versions, is the addition of an option page in the Wordpress administration pages. Here you can set the default options for the plugin and they will be saved to the database. This allows easier access to the options for the two functions if you want to alter the output. You can override the defaults by setting the options in the function call in your page template. This is covered in the function descriptions.
 
-Calls to the `running_time_howold()`  function should still work unchanged, but you now specify a singular and plural word to use instead of days, weeks, months or years. Any default call with version 1.0 will work with needing to change. (Issue1) <http://code.google.com/p/wordpress-running-time/issues/detail?id=1&can=1&q=>
+Some new options have been added in 1.1, these are:
+
+1. Measuring from a specified category for Date Range and How Old functions
+2. Choosing whether to measure from posts, pages or both
+3. Specify a date to measure the How Old function from
+4. Prefix for Date Range and How Old functions
+5. Options to use Prefix and/or Suffix
+6. Option to only show both dates of the Date Range function if they are different (this is date format sensative)
+7. Custom Wording for measurement of How Old function, singular and plural words
+
+In 1.1 you can also call the Running Time functions in a post or page, as well as calling them in the page template.
+
+*Please Note:* The How Old function has had it's arguments extensively changed, any calls specifing the arguments will need to be changed in order to display the desired output. This is not the case with the Date Range function.
 
 == Date Range ==
 
 To output the date range of the posts in your blog you can add the following code to your template:
 
-	<?php runningtime_daterange()?>
+	`<?php runningtime_daterange()?>`
 	
-By default this will output the following in your template:
+By default this will output something similar to the following in your template (based on the dates of your post):
 
-	dd/mm/yyyy to dd/mm/yyyy
+	`From August 10, 2004 to January 20, 2007`
 	
-The first dd/mm/yyyy is the date of the first post in your blog and the second dd/mm/yyyy is the date of the most recent post in your blog.
-To change the output, you can add PHP date strings <http://au2.php.net/date> to change to output of your date range. There also other arguments that you can use to change the output as well
+To change the output, you have full control over the arguments in the function in the Running Time Options. You can also override the default output by calling the function in a template and setting the agruments manually. The arguments are ordered follows:
 
-	<?php runningtime_daterange(postype, dateoutput, dateformat, separator, joiningword)?>
+	`<?php runningtime_daterange($posttype, $dateoutput, $dateformat, 
+$usedatejoiningword, $datejoiningword, $usedateprefix, $dateprefix, 
+$cat_ID, $showdifferent)?>`
 
-Below is explains the settings for the functions, defaults are in **bold**
+Below is explains the options for the function, defaults are in **bold**
 	
-*	`postype` - Type of post to get the date from	
-	Settings: **'post'**, 'page', 'both'
+*	`postype` - Calculate date range from posts, pages or both
+	Options: **Posts Only**, Pages Only, Posts and Pages	
+	Arguments: **'post'**, 'page', 'both'
 
-*	`dateoutput` - Which date to output	 
-	Settings: **'newest'**, 'oldest', 'both'
+*	`dateoutput` - Dates to output either newest, oldest or both
+	Options: **Oldest and Newest**, Oldest Post Only, Newest Post Only
+	Arguments: **'both'**, 'oldest', 'newest'
 
-*	`dateformat` - Format of the date output
-	Settings: **'d/m/y'**, or PHP date strings <http://au2.php.net/date>
-*	`separator` - Separator between date	
-	Settings: **'/'**, or anything you like
+*	`dateformat` - Format for the output of the date using PHP date syntax
+	Options: **F j, Y**, or PHP date strings <http://www.php.net/date>
+	Settings: **'F j, Y'**, or PHP date strings
 
-*	`joiningword` - The word between the two dates	
-	Settings: **'to'**, or anything you like
+*	`usedatejoiningword` - Use joining word between the dates
+	Options: **to**, or anything you want
+	Settings: **'to'**, or anything you want
+
+*	`datejoiningword` - Use joining word between the dates
+	Options: **Checked**, Unchecked
+	Settings: **'true'**, 'false'
+
+*	`usedateprefix` - Use prefix before the date range
+	Options: **Checked**, Unchecked
+	Settings: **'true'**, 'false'
+
+*	`dateprefix` - The wording or symbol before the dates
+	Options: **From**, or anything you want
+	Settings: **'From'**, or anything you want
+
+*	`cat_ID` - Default category to calculate date range from
+	Options: **All Categories**, or any of your categories
+	Settings: **'all'**, or any of your category IDs
+
+*	`showdifferent` - Only show dates if they are different
+	Options: **Checked**, Unchecked
+	Settings: **'true'**, 'false'
+
+You can also call the function by placing `<!--runningtime_daterange-->` in the content of your page or post. This will output the default output of the date range function, currently there is no way to override the default options when placing the function in your page or post.
 
 == How Old? ==
 
 To output the age of your blog, based from the age of the first post in your blog you can add the following code to your template:
 
-	<?php runningtime_howold()?>
+	`<?php runningtime_howold()?>`
 	
-By default this will output the following in your template:
+By default this will output something similar to the following in your template:
 
-	DDD days old
+	`Started 124 days ago`
 	
-The DDD is the number of days (rounded to the closest day) since your first blog post or page. There are some variable that can be changed in 
-the function (defaults in bold), these and their defaults are:
+The measurement of the number of days is the amount of days (rounded down to the closest day) since your first blog post, page or specified date. There are some variables that can be changed in the function (defaults in bold), these and their defaults are:
 
-	<?php runningtime_howold(format, formatsingular, formatplural)?>
+	`<?php runningtime_howold($ageformat, $customwording, $ageformatsingular, 
+$ageformatplural, $howoldprefix, $howoldsuffix, $prefixsuffix, $posttype_howold, 
+$cat_ID_howold, $specified_date_howold)?>`
 	
 Below is explains the settings for the functions, defaults are in **bold**
 	
-*	`format`	- Format for the age to be measured in	
+*	`ageformat` - Age measurement in days, weeks, months or years
+	Options: **Days**, Weeks, Months, Years
 	Settings: **'days'**, 'weeks', 'months', 'years'
 
-*	`formatsingular `	- The singular word to use for measurement
-	Settings: **'format old'**, or anything you like
+*	`customwording` - Use custom wording instead of `ageformat`
+	Options: **Checked**, Unchecked
+	Settings: **'true'**, 'false'
 
-*	`formatplural `	- The plural word to use for measurement
-	Settings: **'formats old'**, or anything you like
+*	`ageformatsingular `	- Custom word to use for singular measurement
+	Options: **NULL**, or anything you like
+	Settings: **NULL**, or anything you like
+
+*	`ageformatplural ` - Custom word to use for plural measurement
+	Options: **NULL**, or anything you like
+	Settings: **NULL**, or anything you like
+
+*	`howoldprefix `	- Wording before age measurement
+	Options: **Started**, or anything you like
+	Settings: **'Started'**, or anything you like
+
+*	`howoldsuffix `	- Wording before age measurement
+	Options: **ago**, or anything you like
+	Settings: **'ago'**, or anything you like
+
+*	`prefixsuffix `	- Choose whether to use the prefix, suffix, both or none
+	Options: **Prefix and Suffix**, Prefix Only, Suffix Only, Use Neitherr
+	Settings: **'both'**,  'prefix', 'suffix', 'none'
+
+*	`posttype_howold `	- Choose whether to use the prefix, suffix, both or none
+	Options: **Prefix and Suffix**, Prefix Only, Suffix Only, Use Neitherr
+	Settings: **'post'**,  'page', 'both', 'date'
+
+*	`cat_ID_howold` - Default category to calculate age from
+	Options: **All Categories**, or any of your categories
+	Settings: **'all'**, or any of your category IDs
+
+*	`specified_date_howold` - Date to measure age of blog from
+	Options: **1st January 2007**, or any date of your choice
+	Settings: **'1st January 2007'**, or any date of your choice
+
+== Example Uses ==
+
+Here are a couple of examples of how to use Running Time away from the defaults
+
+*Road Trip or Holiday*
+
+You could use Running Time as a dynamic header for a category archive of your blog chronicling a Road Trip or a Holiday. This would involve all of the posts for your Road Trip to have the own category. In the category template for your Road Trip use the follow function call:
+
+	`<?php runningtime_daterange('post', 'both' 'd/m/y', 'true', 'thru', 'true', 'My Road Trip', 'n', 'true')?>`
+
+n is the ID category that contains your Road Trip posts. This function call will output the following based on the dates of your post:
+
+	`My Road Trip 01/02/07 thru 01/03/07`
+
+That function call will also only show the first date if it is different on to the first date with the output beinging `My Road Trip 01/02/07` and will never output `My Road Trip 01/02/07 thru 01/02/07`.
+
+*Footer Copyright*
+
+Another use for Running Time is to have a dynamic copyright in the footer of your blogs template. This can be achieved by using the following function call in your footer.php
+
+	`<?php runningtime_daterange('post', 'both', 'Y', 'true', '-', 'true', '&copy;', '', 'true'); ?>`
+
+This will output the following based on the dates of your posts:
+
+	`© 2006 - 2007`
+
+If the two years are the same the output will output the following:
+
+	`© 2007`
+
+If you have any other examples you would like to share with other users of the plugin, please email them to labs@saruken.com
+
+== Screenshots ==
+
+1. Options for Date Range Function
+2. Options for How Old Function
 
 == Known Issues ==
 
-None at the moment
+Calling the functions in a page or post will result in the default output, there is currently no options that can be overridden. The ability to override the defaults in a page or post is being looked into.
 
 If you find any bugs or want to request some additional features for future releases, please log them in this plugin's Google Code repository (both repositories are in sync with each other)
 <http://code.google.com/p/wordpress-running-time/>
