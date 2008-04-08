@@ -1,11 +1,11 @@
 <?php
 /* 
 Plugin Name: Running Time
-Plugin URI:  http://labs.saruken.com/
+Plugin URI:  http://code.andrewhamilton.net/wordpress/plugins/running-time/
 Description: Outputs the date of the oldest post and/or the newest post. Also will output how long the your site has been running for based on the first post date or a specified start date.
-Version: 1.1
+Version: 1.2
 Author: Andrew Hamilton 
-Author URI: http://saruken.com
+Author URI: http://andrewhamilton.net
 Licensed under the The GNU General Public License 2.0 (GPL) http://www.gnu.org/licenses/gpl.html
 */
 
@@ -13,13 +13,60 @@ Licensed under the The GNU General Public License 2.0 (GPL) http://www.gnu.org/l
 //		SETUP FUNCTIONS
 //----------------------------------------------------------------------------
 
+register_activation_hook(__FILE__,'runningtime_setup_options');
+
 $runningtime_opt = get_option('runningtime_options');
+$runningtime_version = get_option('runningtime_version');
+$runningtime_this_version = '1.2';
 
 function runningtime_add_options_page() {
     if (function_exists('add_options_page')) {
-						add_options_page('Running Time', 'Running Time', 8, basename(__FILE__), 'runningtime_options_page');
+		add_options_page('Running Time', 'Running Time', 8, basename(__FILE__), 'runningtime_options_page');
     }
-} 
+}
+
+function runningtime_setup_options(){
+	global $runningtime_opt, $runningtime_version, $runningtime_this_version;
+	
+	// Check the version of Running Time
+	if (empty($runningtime_version)){
+		add_option('runningtime_version', $runningtime_this_version, 'Running Time Wordpress Plugin Version');
+	} elseif ($runningtime_version != $runningtime_this_version) {
+		update_option('runningtime_version', $runningtime_this_version);
+	}
+	
+	// Setup Default Options Array
+		$optionarray_def = array(
+			'posttype' => 'post',
+			'dateoutput' => 'both',
+			'dateformat' => 'F j, Y',
+			'dateprefix' => 'From',
+			'datejoiningword' => 'to',
+			'usedateprefix' => TRUE,
+			'usedatejoiningword' => TRUE,
+			'cat_ID' => 'all',
+			'showifdifferent' => FALSE,
+			'ageformat' => 'days',
+			'customwording' => FALSE,
+			'ageformatsingular' => '',
+			'ageformatplural' => '',
+			'howoldprefix' => 'Started',
+			'howoldsuffix' => 'ago',
+			'prefixsuffix' => 'both',
+			'posttype_howold' => 'both',
+			'cat_ID_howold' => 'all',
+			'specified_date_howold' => '1st April 1976'
+		);
+		
+	if (empty($runningtime_opt)){ //If there aren't already options for Running Time
+		add_option('runningtime_options', $optionarray_def, 'Running Time Wordpress Plugin Options');
+	}	
+	
+}
+
+//Detect WordPress version to add compatibility with 2.3 or higher
+$wpversion_full = get_bloginfo('version');
+$wpversion = preg_replace('/([0-9].[0-9])(.*)/', '$1', $wpversion_full); //Boil down version number to X.X
 
 //----------------------------------------------------------------------------
 //		PLUGIN FUNCTIONS
@@ -64,17 +111,17 @@ function runningtime_daterange(
 //----------------------------------------------------------------------------
 
 function runningtime_howold(
-		$ageformat = '',
-		$customwording = '',
-		$ageformatsingular = '',
-		$ageformatplural = '',
-		$howoldprefix = '',
-		$howoldsuffix = '',
-		$prefixsuffix = '',		
-		$posttype = '',
-		$cat_ID = '',
-		$showifdifferent = ''
-){
+	$ageformat = '',
+	$customwording = '',
+	$ageformatsingular = '',
+	$ageformatplural = '',
+	$howoldprefix = '',
+	$howoldsuffix = '',
+	$prefixsuffix = '',		
+	$posttype = '',
+	$cat_ID = '',
+	$showifdifferent = ''
+	){
 
 	//Call Core Date Range Function
 	$output = runningtime_howold_core(
@@ -128,64 +175,68 @@ function runningtime_daterange_core(
 	$showifdifferent = ''
 	){
 		 
- global $runningtime_opt, $wpdb;
+ global $runningtime_opt, $wpdb, $wpversion;
 
 	//Setup Variables, check for manual setting otherwise use defaults
-	if ($cat_ID == '') {
-		$cat_ID = $runningtime_opt['cat_ID'];
-	}
-
-	if ($posttype == '') {
-		$posttype = $runningtime_opt['posttype'];
-	}
-
-	if ($dateoutput == '') {
-		$dateoutput = $runningtime_opt['dateoutput'];
-	}
-
-	if ($dateformat == '') {
-		$dateformat = $runningtime_opt['dateformat'];
-	}
-
-	if ($runningtime_opt['usedatejoiningword'] == FALSE && $usedatejoiningword == ''){
+	if (empty($cat_ID)) {$cat_ID = $runningtime_opt['cat_ID'];}
+	if (empty($posttype)) {$posttype = $runningtime_opt['posttype'];}
+	if (empty($dateoutput)) {$dateoutput = $runningtime_opt['dateoutput'];}
+	if (empty($dateformat)) {$dateformat = $runningtime_opt['dateformat'];}
+	if (empty($datejoiningword)) {$datejoiningword = $runningtime_opt['datejoiningword'];}
+	if (empty($dateprefix)) {$dateprefix = $runningtime_opt['dateprefix'];}
+	
+	if ($runningtime_opt['usedatejoiningword'] == FALSE && $usedatejoiningword == '') 
+	{
 		$usedatejoiningword = 'false';
-	} elseif ($runningtime_opt['usedatejoiningword'] == TRUE && $usedatejoiningword == '') {
+	}
+	elseif ($runningtime_opt['usedatejoiningword'] == TRUE && $usedatejoiningword == '') 
+	{
 		$usedatejoiningword = 'true';
 	}
 
-	if ($datejoiningword == '') {
-		$datejoiningword = $runningtime_opt['datejoiningword'];
-	}
-
-	if ($runningtime_opt['usedateprefix'] == FALSE && $usedateprefix == ''){
+	if ($runningtime_opt['usedateprefix'] == FALSE && $usedateprefix == '') 
+	{
 		$usedateprefix = 'false';
-	} elseif ($runningtime_opt['usedateprefix'] == TRUE && $usedateprefix == '') {
+	}
+	elseif ($runningtime_opt['usedateprefix'] == TRUE && $usedateprefix == '') 
+	{
 		$usedateprefix = 'true';
 	}
 
-	if ($dateprefix == '') {
-		$dateprefix = $runningtime_opt['dateprefix'];
-	}
-	
-	if ($runningtime_opt['showifdifferent'] == FALSE && $showifdifferent == ''){
+	if ($runningtime_opt['showifdifferent'] == FALSE && $showifdifferent == '')
+	{
 		$showifdifferent = 'false';
-	} elseif ($runningtime_opt['showifdifferent'] == TRUE && $showifdifferent == '') {
+	}
+	elseif ($runningtime_opt['showifdifferent'] == TRUE && $showifdifferent == '')
+	{
 		$showifdifferent = 'true';
 	}
 
- //SQL Query Componants
-	if ($cat_ID == 'all'){//Check for specified category
+ 	//SQL Query Componants
+	if ($cat_ID == 'all')
+	{ //Check for specified category
 		$sqlquery_table_prefix_posts = '';
 		$sqlquery_table_prefix_cat = '';
 		$sqlquery_select = "SELECT ID, post_date ";
 		$sqlquery_from = "FROM $wpdb->posts ";
 		$sqlquery_where = "WHERE post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ";
-	}else{//Specific Category
-		$sqlquery_table_prefix_posts = 'wposts.';
-		$sqlquery_table_prefix_cat = 'wpostcat.';
-		$sqlquery_select = "SELECT ".$sqlquery_table_prefix_posts."ID, ".$sqlquery_table_prefix_posts."post_date ";
-		$sqlquery_from = "FROM $wpdb->posts wposts, $wpdb->post2cat wpostcat ";
-		$sqlquery_where = "WHERE ".$sqlquery_table_prefix_posts."ID = ".$sqlquery_table_prefix_cat."post_id AND ".$sqlquery_table_prefix_cat."category_id = $cat_ID AND post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ";	
+	} 
+	else 
+	{ //Specific Category
+		$sqlquery_table_prefix_posts = 'wposts';
+		$sqlquery_table_prefix_cat = 'wpostcat';
+		$sqlquery_select = "SELECT ".$sqlquery_table_prefix_posts.".ID, ".$sqlquery_table_prefix_posts.".post_date ";
+		
+		if ($wpversion >= 2.3)
+		{ //If WordPress 2.3 or greater with new category structure
+			$sqlquery_from = "FROM $wpdb->posts ".$sqlquery_table_prefix_posts.", $wpdb->term_relationships ".$sqlquery_table_prefix_cat;
+			$sqlquery_where = "WHERE ".$sqlquery_table_prefix_posts.".ID = ".$sqlquery_table_prefix_cat.".object_id AND ".$sqlquery_table_prefix_cat.".term_taxonomy_id = $cat_ID AND post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ";
+		} 
+		else 
+		{ //For Versions of WordPress 2.2 and below
+			$sqlquery_from = "FROM $wpdb->posts ".$sqlquery_table_prefix_posts.", $wpdb->post2cat ".$sqlquery_table_prefix_cat;
+			$sqlquery_where = "WHERE ".$sqlquery_table_prefix_posts.".ID = ".$sqlquery_table_prefix_cat.".post_id AND ".$sqlquery_table_prefix_cat.".category_id = $cat_ID AND post_date != '0000-00-00 00:00:00' AND post_status = 'publish' ";
+		}	
 	}
 		
 	$sqlquery_posttype = "AND ".$sqlquery_table_prefix_posts."post_type = '$posttype' ";
@@ -195,12 +246,15 @@ function runningtime_daterange_core(
 	//Construct SQL Query Start
 	$sqlquery_start = $sqlquery_select.$sqlquery_from.$sqlquery_where;
 
- //Find the newest and oldest posts		
-	if ($posttype == 'post' || $posttype == 'page'){ //Posts or Pages Only
+	//Find the newest and oldest posts		
+	if ($posttype == 'post' || $posttype == 'page')
+	{ //Posts or Pages Only
 		$oldestpost = $wpdb->get_results("$sqlquery_start"."$sqlquery_posttype"."$sqlquery_order_postdate", OBJECT);
 		$newestpost = $wpdb->get_results("$sqlquery_start"."$sqlquery_posttype"."$sqlquery_order_postdate_desc", OBJECT);
 		 
-	}else{ //Both Posts and Pages
+	}
+	else
+	{ //Both Posts and Pages
 		$oldestpost = $wpdb->get_results("$sqlquery_start"."$sqlquery_order_postdate", OBJECT);
 		$newestpost = $wpdb->get_results("$sqlquery_start"."$sqlquery_order_postdate_desc", OBJECT);
 	}
@@ -215,25 +269,35 @@ function runningtime_daterange_core(
 
 	//Construct output
 	
-	if ($showifdifferent == 'true' && $oldestdate == $newestdate){ //Check to see if 'Show if Different' is set and the dates are the same	
+	if ($showifdifferent == 'true' && $oldestdate == $newestdate)
+	{ //Check to see if 'Show if Different' is set and the dates are the same	
 		$output = $newestdate;			
-	} else {
+	} 
+	else 
+	{
 		
-		if ($dateoutput == 'oldest' || $dateoutput == 'both'){
+		if ($dateoutput == 'oldest' || $dateoutput == 'both')
+		{
 			$output = $oldestdate;
-		} elseif ($dateoutput == 'newest') {
+		} 
+		elseif ($dateoutput == 'newest') 
+		{
 			$output = $newestdate;		
 		}
 			
-		if ($usedatejoiningword == 'true' && $dateoutput == 'both') {
+		if ($usedatejoiningword == 'true' && $dateoutput == 'both') 
+		{
 			$output .= '&nbsp;'.$datejoiningword.'&nbsp;'.$newestdate;
-		} elseif ($usedatejoiningword == 'false' && $dateoutput == 'both') {
+		} 
+		elseif ($usedatejoiningword == 'false' && $dateoutput == 'both') 
+		{
 			$output .= '&nbsp;'.$newestdate;
 		}	
 		
 	}
 	
-	if ($usedateprefix == 'true' && $dateoutput == 'both') {
+	if ($usedateprefix == 'true' && $dateoutput == 'both') 
+	{
 		$output = $dateprefix.'&nbsp;'.$output;
 	}
 		
@@ -261,36 +325,20 @@ function runningtime_howold_core(
 	global $runningtime_opt, $wpdb;
 
 	//Setup Variables, check for manual setting otherwise use defaults
-	if ($cat_ID == '') {
-		$cat_ID = $runningtime_opt['cat_ID_howold'];
-	}
+	if (empty($cat_ID)) {$cat_ID = $runningtime_opt['cat_ID_howold'];}
+	if (empty($posttype)) {$posttype = $runningtime_opt['posttype_howold'];}
+	if (empty($ageformat)) {$howoldprefix = $runningtime_opt['howoldprefix'];}
+	if (empty($prefixsuffix)) {$prefixsuffix = $runningtime_opt['prefixsuffix'];}
 
-	if ($posttype == '') {
-		$posttype = $runningtime_opt['posttype_howold'];
-	}
-
-	if ($ageformat == '') {
-		$ageformat = $runningtime_opt['ageformat'];
-	}
-
-	if ($runningtime_opt['customwording'] == FALSE && $customwording == ''){
+	if ($runningtime_opt['customwording'] == FALSE && $customwording == '')
+	{
 		$customwording = 'false';
-	} elseif ($runningtime_opt['customwording'] == TRUE && $customwording == '') {
+	}
+	elseif ($runningtime_opt['customwording'] == TRUE && $customwording == '')
+	{
 		$usedatejoiningword = 'true';
 		$ageformatsingular = $runningtime_opt['ageformatsingular'];
 		$ageformatplural = $runningtime_opt['ageformatplural'];
-	}
-
-	if ($howoldprefix == '') {
-		$howoldprefix = $runningtime_opt['howoldprefix'];
-	}
-
-	if ($howoldsuffix == '') {
-		$howoldsuffix = $runningtime_opt['howoldsuffix'];
-	}
-
-	if ($prefixsuffix == '') {
-		$prefixsuffix = $runningtime_opt['prefixsuffix'];
 	}
 
 	//Get the current time
@@ -383,31 +431,7 @@ function runningtime_howold_core(
 //----------------------------------------------------------------------------
 
 function runningtime_options_page() {
-	global $wpdb;
-
-	// Setup Default Options Array
-		$optionarray_def = array(
-			'posttype' => 'post',
-			'dateoutput' => 'both',
-			'dateformat' => 'F j, Y',
-			'dateprefix' => 'From',
-			'datejoiningword' => 'to',
-			'usedateprefix' => TRUE,
-			'usedatejoiningword' => TRUE,
-			'cat_ID' => 'all',
-			'showifdifferent' => FALSE,
-			'ageformat' => 'days',
-			'customwording' => FALSE,
-			'ageformatsingular' => '',
-			'ageformatplural' => '',
-			'howoldprefix' => 'Started',
-			'howoldsuffix' => 'ago',
-			'prefixsuffix' => 'both',
-			'posttype_howold' => 'both',
-			'cat_ID_howold' => 'all',
-			'specified_date_howold' => '1st January 2007'
-		);
-		add_option('runningtime_options', $optionarray_def, 'Running Time Wordpress Plugin Options');
+	global $wpversion_full, $wpversion, $wpdb, $runningtime_version, $runningtime_this_version;
 
 		if (isset($_POST['submit']) ) {
 			
@@ -435,16 +459,41 @@ function runningtime_options_page() {
 		);
 		
 		update_option('runningtime_options', $optionarray_update);
+		
+		if ($runningtime_version != $runningtime_this_version) {
+			update_option('runningtime_version', $runningtime_this_version);
+		}
+		
 		}
 		
 	// Get Options
 		$optionarray_def = get_option('runningtime_options');
 
 	// Setup Default Post Listing Options - Which category to calculate from
-		$categories = $wpdb->get_results("SELECT * FROM $wpdb->categories ORDER BY cat_name");
 		$cat_options = '';
+	
+		if ($wpversion >= 2.3){ //If WordPress 2.3 or greater with new category structure
+			$terms = $wpdb->get_results("SELECT * FROM $wpdb->terms ORDER BY name");
+			
+			foreach ($terms as $term) {
+			if ($term->term_ID == $optionarray_def['cat_ID']) {
+					$selected = 'selected="selected"';
+			} elseif ($term->term_ID == $optionarray_def['cat_ID_howold']) {
+					$selected_howold = 'selected="selected"';
+			} else {
+					$selected = '';
+					$selected_howold = '';
+			}
+			
+			$category_list .= "\n\t<option value='$term->term_ID' $selected>$term->name</option>";
+			$category_list_howold .= "\n\t<option value='$term->term_ID' $selected_howold>$term->name</option>";
+			
+			}
 		
-		foreach ($categories as $category) {
+		} else { //For Versions of WordPress 2.2 and below
+			$categories = $wpdb->get_results("SELECT * FROM $wpdb->categories ORDER BY cat_name");
+			
+			foreach ($categories as $category) {
 			if ($category->cat_ID == $optionarray_def['cat_ID']) {
 					$selected = 'selected="selected"';
 			} elseif ($category->cat_ID == $optionarray_def['cat_ID_howold']) {
@@ -454,8 +503,10 @@ function runningtime_options_page() {
 					$selected_howold = '';
 			}
 			
-		$category_list .= "\n\t<option value='$category->cat_ID' $selected>$category->cat_name</option>";
-		$category_list_howold .= "\n\t<option value='$category->cat_ID' $selected_howold>$category->cat_name</option>";
+			$category_list .= "\n\t<option value='$category->cat_ID' $selected>$category->cat_name</option>";
+			$category_list_howold .= "\n\t<option value='$category->cat_ID' $selected_howold>$category->cat_name</option>";
+
+			}
 		
 		}
 
@@ -563,13 +614,13 @@ function runningtime_options_page() {
 <div class="wrap">
 	<h2>Running Time Options</h2>
 	<form method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?page=' . basename(__FILE__); ?>&updated=true">
-	<fieldset class="options">
-	<legend>Date Range</legend>
+	<fieldset class="options" style="border: none">
+	<h3>Date Range</h3>
 	<p>
 	Settings for controlling the output for the date range of your blog, from the first page or post to the last page or post. To use this functionn, 
 	call the <code>runningtime_daterange();</code> function in a page template or place <code>&lt;!--runningtime_daterange--&gt;</code> in the content of your page or post.
 	</p>
-	<table width="100%" cellspacing="2" cellpadding="5" class="editform">
+	<table width="100%" class="form-table">
 			<tr valign="center"> 
 				<th width="150px" scope="row">Calculate From:</th> 
 				<td width="150px"><select name="posttype" id="posttype_inp"><?php echo $postpage_options ?></select></td>
@@ -623,13 +674,13 @@ function runningtime_options_page() {
 	For example uses and function calls, please visit the plugin's page on <a href="http://wordpress.org/extend/plugins/running-time/other_notes/">Wordpress.org</a>.
 	</p>
 	</fieldset>	
-	<fieldset class="options">
-	<legend>How Old</legend>
+	<fieldset class="options" style="border: none">
+	<h3>How Old</h3>
 	<p>
 	Settings for controlling the output for the age of your blog, measured in either days, weeks, months or years. To use this functionn, 
 	call the <code>runningtime_howold();</code> function in a page template or place <code>&lt;!--runningtime_howold--&gt;</code> in the content of your page or post.
 	</p>
-	<table width="100%" cellspacing="2" cellpadding="5" class="editform">
+	<table width="100%" class="form-table">
 			<tr valign="center"> 
 				<th width="150px" scope="row">Calculate From:</th> 
 				<td width="150px"><select name="posttype_howold" id="posttype_howold_inp"><?php echo $postpage_options_howold ?></select></td>
@@ -638,7 +689,7 @@ function runningtime_options_page() {
 			<tr valign="center"> 
 				<th width="150px" scope="row">Specified Date: </th> 
 				<td><input type="text" id="specified_date_howold_inp" name="specified_date_howold" value="<?php echo $optionarray_def['specified_date_howold']; ?>" size="15" /></td>
-				<td><span style="color: #555; font-size: .85em;">Specified date to measure age from <em>(e.g. 1st January 2007)</em></span></td>
+				<td><span style="color: #555; font-size: .85em;">Specified date to measure age from <em>(e.g. 1st April 1976)</em></span></td>
 			</tr>
 			<tr valign="center"> 
 				<th width="150px" scope="row">Post Category:</th> 

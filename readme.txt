@@ -3,8 +3,8 @@
 Contributors: hami
 Tags: date, time, age, running-time, length, age-of-blog, stats, statistics,
 Requires at least: 2.1
-Tested up to: 2.2.1
-Stable tag: running-time-1.1
+Tested up to: 2.5
+Stable tag: 1.2
 
 A Wordpress plugin that outputs your blog's age in date range, days, weeks, months or years
 
@@ -28,6 +28,16 @@ Once you have *Running Time* installed you can add it's functions to templates i
 There are two functions in *Running Time*, `runningtime_daterange()` and `runningtime_howold()`.
 
 == Changes ==
+
+**1.2**
+
+Version 1.2 finally adds support for the new category structure in WordPress 2.3 and higher, whilst still maintaining support for older versions of WordPress.
+
+1.2 also fixes the problem by correctly adding the default options to your WordPress database on activation of the plugin. This fixes a problem where you could get an error on your blog until you saved the settings for the first time.
+
+Updated admins pages to match the new admin theme in WordPress 2.5
+
+**1.1**
 
 The main change in 1.1, from previous versions, is the addition of an option page in the Wordpress administration pages. Here you can set the default options for the plugin and they will be saved to the database. This allows easier access to the options for the two functions if you want to alter the output. You can override the defaults by setting the options in the function call in your page template. This is covered in the function descriptions.
 
